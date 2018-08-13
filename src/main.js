@@ -9,6 +9,10 @@ import Axios from 'axios'
 Vue.use(ElementUI)
 
 Axios.defaults.baseURL = 'https://www.escook.cn:8888/api/private/v1/'
+Axios.interceptors.request.use(config => {
+  config.headers.Authorization = window.sessionStorage.getItem('token')
+  return config
+})
 Vue.prototype.$http = Axios
 
 Vue.config.productionTip = false
