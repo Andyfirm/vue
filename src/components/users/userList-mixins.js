@@ -41,6 +41,22 @@ export default {
           { required: true, message: '请输入邮箱', trigger: 'blur' }
         ],
         mobile: [{ required: true, message: '请输入手机号码', trigger: 'blur' }]
+      },
+      // 控制编辑对话框是否显示
+      editDialogVisible: false,
+      // 编辑表单的数据对象
+      editForm: {
+        username: '',
+        email: '',
+        mobile: ''
+      },
+      // 编辑表单的验证规则对象
+      editFormRules: {
+        email: [
+          { validator: ckeckEmail, trigger: 'blur' },
+          { required: true, message: '请输入邮箱', trigger: 'blur' }
+        ],
+        mobile: [{ required: true, message: '请输入手机号码', trigger: 'blur' }]
       }
     }
   },
@@ -80,6 +96,45 @@ export default {
         this.$message.success('添加用户成功！')
         this.addDialogVisible = false
         this.getUserList()
+      })
+    },
+    async remove(id) {
+      const confirmResult = await this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if (confirmResult !== 'confirm') {
+        return this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      }
+      const { data: res } = await this.$http.delete('users/' + id)
+      if (res.meta.status !== 200) return this.$message.error('删除用户失败！')
+      this.$message.success('删除用户成功！')
+      this.getUserList()
+    },
+    async showEditDialog(id) {
+      const { data: res } = await this.$http.get('users/' + id)
+      if (res.meta.status !== 200) return this.$message.error('查询信息失败！')
+      this.editForm = res.data
+      this.editDialogVisible = true
+    },
+    editDialogClosed() {
+      this.$refs.editFormRef.resetFields()
+    },
+    saveUserInfo() {
+      this.$refs.editFormRef.validate(async valid => {
+        if (!valid) return
+      const {data: res} = await this.$http.put('users/' + this.editForm.id, {
+          mobile: this.editForm.mobile,
+          email: this.editForm.email
+        })
+        if (res.meta.status !== 200) return this.$message.error('编辑用户失败！')
+        this.$message.success('编辑用户成功！')
+        this.getUserList()
+        this.editDialogVisible = false
       })
     }
   }
