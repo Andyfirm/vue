@@ -57,7 +57,12 @@ export default {
           { required: true, message: '请输入邮箱', trigger: 'blur' }
         ],
         mobile: [{ required: true, message: '请输入手机号码', trigger: 'blur' }]
-      }
+      },
+      setRoleDialogVisible: false,
+      editInfo: {},
+      // 所有的角色列表数据
+      rolesList: [],
+      selectedRoleId: ''
     }
   },
   created() {
@@ -127,7 +132,7 @@ export default {
     saveUserInfo() {
       this.$refs.editFormRef.validate(async valid => {
         if (!valid) return
-      const {data: res} = await this.$http.put('users/' + this.editForm.id, {
+        const { data: res } = await this.$http.put('users/' + this.editForm.id, {
           mobile: this.editForm.mobile,
           email: this.editForm.email
         })
@@ -136,6 +141,24 @@ export default {
         this.getUserList()
         this.editDialogVisible = false
       })
+    },
+    // 点击分配角色方法
+    async showSetRoleDialog(userInfo) {
+      this.editInfo = userInfo
+      const { data: res } = await this.$http.get('roles')
+      if (res.meta.status !== 200) return this.$message.error('获取角色列表失败！')
+      this.rolesList = res.data
+      this.setRoleDialogVisible = true
+    },
+    async saveRoleInfo() {
+      if (!this.selectedRoleId) return this.$message.warning('请选择要分配的新角色！')
+      const { data: res } = await this.$http.put('users/' + this.editInfo.id + '/role', {
+        rid: this.selectedRoleId
+      })
+      if (res.meta.status !== 200) return this.$message.error('分配角色失败！')
+      this.$message.success('分配角色成功！')
+      this.getUserList()
+      this.setRoleDialogVisible = false
     }
   }
 }
