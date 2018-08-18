@@ -118,6 +118,9 @@ export default {
       const { data: res } = await this.$http.delete('users/' + id)
       if (res.meta.status !== 200) return this.$message.error('删除用户失败！')
       this.$message.success('删除用户成功！')
+      if (this.userList.length === 1 && this.queryInfo.pagenum > 1) {
+        this.queryInfo.pagenum--
+      }
       this.getUserList()
     },
     async showEditDialog(id) {

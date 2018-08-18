@@ -96,6 +96,10 @@ export default {
 
 <style>
 .el-tag {
-  margin: 10px;
+  margin: 10px 5px;
+}
+.el-row {
+  display: flex;
+  align-items: center;
 }
 </style>

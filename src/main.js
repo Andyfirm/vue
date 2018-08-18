@@ -2,10 +2,12 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
+import Axios from 'axios'
 import './assets/fonts/iconfont.css'
 import './assets/css/global.css'
-import Axios from 'axios'
+import TreeTable from 'vue-table-with-tree-grid'
 
+Vue.component('tree-table', TreeTable)
 Vue.use(ElementUI)
 
 Axios.defaults.baseURL = 'https://www.escook.cn:8888/api/private/v1/'
